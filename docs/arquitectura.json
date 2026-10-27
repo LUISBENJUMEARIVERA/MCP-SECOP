@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "MCP SECOP II Colombia & Puente Híbrido SCRAPPING",
+    "locale": "es",
+    "output": "docs/arquitectura.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/LUISBENJUMEARIVERA/MCP-SECOP.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "97537dfc51430167a3dc2b7757c81502d07da924"
+    }
+  },
+  "components": [
+    {
+      "id": "swiss_ui",
+      "type": "frontend",
+      "label": "Swiss Light Web UI",
+      "sublabel": "Control Center :8020",
+      "pos": [40, 60],
+      "size": [145, 62],
+      "sources": [
+        { "path": "src/mcp_secop/ui_template.py", "line": 5, "end_line": 120 }
+      ]
+    },
+    {
+      "id": "web_gateway",
+      "type": "backend",
+      "label": "FastAPI Gateway",
+      "sublabel": "REST + JSONL :8020",
+      "pos": [290, 60],
+      "size": [150, 62],
+      "sources": [
+        { "path": "src/mcp_secop/web_app.py", "line": 24, "end_line": 144 }
+      ]
+    },
+    {
+      "id": "agents",
+      "type": "external",
+      "label": "Clientes MCP IA",
+      "sublabel": "Claude / Cursor / AGY",
+      "pos": [40, 230],
+      "size": [145, 62]
+    },
+    {
+      "id": "mcp_core",
+      "type": "backend",
+      "label": "MCPServer Core",
+      "sublabel": "8 Tools · 4 Resources",
+      "pos": [290, 230],
+      "size": [150, 62],
+      "sources": [
+        { "path": "src/mcp_secop/mcp_server.py", "line": 16, "end_line": 203 },
+        { "path": "src/mcp_secop/cli.py", "line": 51, "end_line": 69 }
+      ]
+    },
+    {
+      "id": "bridge",
+      "type": "backend",
+      "label": "ScrappingBridge",
+      "sublabel": "Conector Bidireccional",
+      "pos": [550, 230],
+      "size": [155, 62],
+      "sources": [
+        { "path": "src/mcp_secop/scrapping_bridge.py", "line": 37, "end_line": 214 }
+      ]
+    },
+    {
+      "id": "soda_engine",
+      "type": "backend",
+      "label": "Motor SODA & RAG",
+      "sublabel": "SoQL + Chunker SHA256",
+      "pos": [815, 230],
+      "size": [155, 62],
+      "sources": [
+        { "path": "src/mcp_secop/secop_engine.py", "line": 171, "end_line": 420 }
+      ]
+    },
+    {
+      "id": "datos_gov",
+      "type": "cloud",
+      "label": "Datos Abiertos SODA",
+      "sublabel": "p6dx-8zbt · jbjy-vk9h",
+      "pos": [1075, 230],
+      "size": [150, 62]
+    },
+    {
+      "id": "scrapping_app",
+      "type": "external",
+      "label": "Proyecto SCRAPPING",
+      "sublabel": "API Hermana :8010",
+      "pos": [550, 525],
+      "size": [155, 62]
+    },
+    {
+      "id": "spider_dom",
+      "type": "backend",
+      "label": "Spider & Inspector",
+      "sublabel": "BS4 + __VIEWSTATE",
+      "pos": [815, 400],
+      "size": [155, 62],
+      "sources": [
+        { "path": "src/mcp_secop/taxonomy_spider.py", "line": 366, "end_line": 518 }
+      ]
+    },
+    {
+      "id": "secop_portal",
+      "type": "cloud",
+      "label": "Portal SECOP II",
+      "sublabel": "community.secop.gov.co",
+      "pos": [1075, 400],
+      "size": [150, 62]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Runtime Paquete Python: src/mcp_secop",
+      "wraps": ["web_gateway", "mcp_core", "bridge", "soda_engine", "spider_dom"]
+    }
+  ],
+  "connections": [
+    {
+      "id": "ui-to-gateway",
+      "from": "swiss_ui",
+      "to": "web_gateway",
+      "label": "HTTP / JSON"
+    },
+    {
+      "id": "gateway-to-mcp",
+      "from": "web_gateway",
+      "to": "mcp_core",
+      "label": "dispatch tool"
+    },
+    {
+      "id": "agents-to-mcp",
+      "from": "agents",
+      "to": "mcp_core",
+      "label": "STDIO / SSE",
+      "variant": "emphasis"
+    },
+    {
+      "id": "mcp-to-bridge",
+      "from": "mcp_core",
+      "to": "bridge",
+      "label": "async call",
+      "variant": "emphasis"
+    },
+    {
+      "id": "bridge-to-scrapping",
+      "from": "bridge",
+      "to": "scrapping_app",
+      "label": "HTTP :8010"
+    },
+    {
+      "id": "bridge-to-soda",
+      "from": "bridge",
+      "to": "soda_engine",
+      "label": "SoQL + RAG",
+      "variant": "emphasis"
+    },
+    {
+      "id": "soda-to-datosgov",
+      "from": "soda_engine",
+      "to": "datos_gov",
+      "label": "HTTPS SoQL",
+      "variant": "emphasis"
+    },
+    {
+      "id": "bridge-to-spider",
+      "from": "bridge",
+      "to": "spider_dom",
+      "label": "crawl / inspect",
+      "variant": "dashed"
+    },
+    {
+      "id": "spider-to-portal",
+      "from": "spider_dom",
+      "to": "secop_portal",
+      "label": "GET DOM",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Protocolo MCP & Pasarela Suiza",
+      "items": [
+        "Expone 8 Tools, 4 Resources y 2 Prompts mediante MCPServer (STDIO y SSE).",
+        "Centro de Control Web en Minimalismo Suizo Claro (:8020) con exportación JSONL."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Puente Bidireccional SCRAPPING",
+      "items": [
+        "Delega en vivo al backend SCRAPPING (:8010) y sincroniza feeds RAG.",
+        "Degrada sin interrupción al motor autónomo local si :8010 está fuera de línea."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Extracción Híbrida & RAG",
+      "items": [
+        "Combina Socrata SODA SoQL (p6dx-8zbt y jbjy-vk9h) con Spider ASP.NET Vortal.",
+        "Inyecta contexto institucional determinista en cada chunk Markdown para Vector DBs."
+      ]
+    }
+  ]
+}

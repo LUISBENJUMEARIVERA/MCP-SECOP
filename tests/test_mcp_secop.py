@@ -114,6 +114,7 @@ def test_mcp_resources_and_prompts() -> None:
 def test_web_gateway_endpoints_and_swiss_ui() -> None:
     # Arrange / Act
     ui_resp = client.get("/")
+    arch_resp = client.get("/arquitectura.html")
     health_resp = client.get("/api/v1/health")
     tools_resp = client.get("/api/v1/mcp/tools")
     call_resp = client.post(
@@ -125,6 +126,7 @@ def test_web_gateway_endpoints_and_swiss_ui() -> None:
     # Assert
     assert ui_resp.status_code == 200
     assert "MCP SECOP II" in ui_resp.text
+    assert arch_resp.status_code == 200
     assert health_resp.status_code == 200
     assert health_resp.json()["status"] == "OPERATIONAL"
     assert tools_resp.json()["total"] == 8

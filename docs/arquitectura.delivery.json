@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "29bc9238-4498-4ff8-b871-9c3abe1fbabb",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "C:\\Users\\luisa\\OneDrive\\Escritorio\\SKILLS\\mcp secop\\docs\\arquitectura.json",
+  "output": "C:\\Users\\luisa\\OneDrive\\Escritorio\\SKILLS\\mcp secop\\docs\\arquitectura.html",
+  "specification": {
+    "sha256": "7c49bebda235928b512e9f0ddc15c690e78eb3af8913e3602e108fbf0fcd584e",
+    "bytes": 5472
+  },
+  "artifact": {
+    "sha256": "d641e37b1ab7fce93430d7d2de2ac6c2c46b53f2aabbbd4647c5e8f467d1892b",
+    "bytes": 852106
+  }
+}
