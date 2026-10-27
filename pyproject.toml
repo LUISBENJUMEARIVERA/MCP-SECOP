@@ -1,0 +1,78 @@
+[project]
+name = "mcp-secop"
+version = "1.0.0"
+description = "Servidor MCP (Model Context Protocol) e Inspector Web Suizo para SECOP II y Colombia Compra Eficiente, conectado en puente bidireccional con el proyecto SCRAPPING y generador de pipelines RAG."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+keywords = [
+    "mcp",
+    "secop-ii",
+    "colombia-compra-eficiente",
+    "web-scraping",
+    "rag",
+    "socrata-soda",
+    "public-procurement",
+    "colombia",
+]
+authors = [
+    { name = "Luis Benjumea Rivera", email = "luisantoniobenjumeaia@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+dependencies = [
+    "beautifulsoup4>=4.12.3",
+    "fastapi>=0.115.0",
+    "httpx>=0.27.0",
+    "mcp>=1.2.0",
+    "pydantic>=2.9.0",
+    "uvicorn>=0.32.0",
+]
+
+[project.scripts]
+mcp-secop = "mcp_secop.cli:main"
+mcp-secop-web = "mcp_secop.web_app:run_web_server"
+
+[project.urls]
+Homepage = "https://github.com/LUISBENJUMEARIVERA/MCP-SECOP"
+Repository = "https://github.com/LUISBENJUMEARIVERA/MCP-SECOP"
+Issues = "https://github.com/LUISBENJUMEARIVERA/MCP-SECOP/issues"
+
+[build-system]
+requires = ["uv_build>=0.6.0,<0.15.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=3.7",
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.6",
+    "ty>=0.0.1",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF", "C4"]
+ignore = ["E501", "RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["mcp_secop"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+asyncio_mode = "auto"
