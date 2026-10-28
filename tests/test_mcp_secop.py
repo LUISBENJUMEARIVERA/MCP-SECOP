@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -82,8 +84,17 @@ async def test_mcp_tools_dispatch_search_and_rag() -> None:
 
 
 @pytest.mark.asyncio
-async def test_mcp_bridge_and_budget_tools() -> None:
-    # Arrange / Act
+async def test_mcp_bridge_and_budget_tools(tmp_path: Path) -> None:
+    # Arrange
+    from mcp_secop.scrapping_bridge import ScrappingBridgeClient
+
+    mock_ws = tmp_path / "SCRAPPING"
+    (mock_ws / "backend" / "app").mkdir(parents=True)
+    (mock_ws / "backend" / "app" / "main.py").write_text("# mock", encoding="utf-8")
+    custom_bridge = ScrappingBridgeClient(workspace_path=mock_ws)
+
+    # Act
+    ws_detected, modules = custom_bridge.inspect_local_workspace()
     bridge_st = await dispatch_mcp_tool("secop_bridge_status", {})
     budget_res = await dispatch_mcp_tool(
         "secop_analyze_procurement_budget",
@@ -91,8 +102,10 @@ async def test_mcp_bridge_and_budget_tools() -> None:
     )
 
     # Assert
+    assert ws_detected is True
+    assert "backend/app/main.py" in modules
     assert bridge_st["mcp_tools_registered"] == 8
-    assert bridge_st["scrapping_workspace_detected"] is True
+    assert bridge_st["bridge_mode"] in ("ONLINE_HTTP_BRIDGE", "LOCAL_WORKSPACE_HYBRID")
     assert budget_res["financial_summary_cop"]["total_budget_cop"] > 0
     assert len(budget_res["top_5_highest_value_processes"]) >= 1
 
